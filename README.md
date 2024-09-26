@@ -22,8 +22,13 @@ To track this project, I am using GitHub Projects. Similar to Trello, GitHub pro
 
 #### Screenshots of task progress:
 
-25/9/24
+**24/9/24**
 ![GitHub_tasks_1](./docs/Tasks1.png)
+
+**25/9/24**
+![GitHub_tasks_1](./docs/Tasks2.png)
+
+
 
 ___
 
