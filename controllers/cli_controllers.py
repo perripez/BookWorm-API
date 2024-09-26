@@ -1,7 +1,10 @@
+from datetime import date
 from flask import Blueprint
+from sqlalchemy import text
 
 from init import db, bcrypt
 from models.user import User
+from models.book import Book
 
 db_commands = Blueprint("db", __name__)
 
@@ -14,7 +17,7 @@ def create_tables():
 # Seed Tables Command
 @db_commands.cli.command("seed")
 def seed_tables():
-    # Create a list of user instances
+    # Create a list of user instances - Dummy Values
     users = [
         User(
             name = "Book Worm",
@@ -31,11 +34,43 @@ def seed_tables():
 
     db.session.add_all(users)
 
+    books = [
+        Book(
+            title = "Book 1",
+            publication_year = "2000",
+            date = date.today(),
+            user = users[0]
+        ),
+        Book(
+            title = "Book 2",
+            publication_year = "2004",
+            date = date.today(),
+            user = users[0]
+        ),
+        Book(
+            title = "Book 3",
+            publication_year = "2021",
+            date = date.today(),
+            user = users[1]
+        )
+    ]
+
+    db.session.add_all(books)
+
     db.session.commit()
     print("Tables Seeded!")
 
 # Drop Tables Command
 @db_commands.cli.command("drop")
 def drop_tables():
+    # Close any active sessions
+    db.session.close()
+    
+    # Manually drop tables with CASCADE to handle dependencies
+    db.session.execute(text('DROP TABLE IF EXISTS books CASCADE;'))
+    db.session.execute(text('DROP TABLE IF EXISTS users CASCADE;'))
+    db.session.commit()
+
+    # Optionally drop all remaining tables
     db.drop_all()
     print("Tables Dropped!")
