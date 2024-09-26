@@ -42,7 +42,7 @@ def login_user():
     # Get the data from the body of the request
     body_data = request.get_json()
     # Find the user in the db with that specific email address
-    stmt = db.select(User).filter_by(email=body_data.get("email")) # SELECT * FROM User WHERE email = 'email_value';
+    stmt = db.select(User).filter_by(email=body_data.get("email")) # SELECT * FROM users WHERE email = 'email_value';
     user = db.session.scalar(stmt)
     # If user exists + password is correct
     if user and bcrypt.check_password_hash(user.password, body_data.get("password")): # Check from db, map with data from request
