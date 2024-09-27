@@ -5,6 +5,7 @@ from sqlalchemy import text
 from init import db, bcrypt
 from models.user import User
 from models.book import Book
+from models.review import Review
 
 db_commands = Blueprint("db", __name__)
 
@@ -34,6 +35,7 @@ def seed_tables():
 
     db.session.add_all(users)
 
+    # Create a list of book instances - Dummy Values
     books = [
         Book(
             title = "Book 1",
@@ -56,6 +58,33 @@ def seed_tables():
     ]
 
     db.session.add_all(books)
+
+    # Create a list of review instances - Dummy Values
+    reviews = [
+        Review(
+            rating = "5",
+            comment = "Very Good",
+            date = date.today(),
+            user = users[0],
+            book = books[0]
+        ),
+          Review(
+            rating = "4",
+            comment = "Good",
+            date = date.today(),
+            user = users[1],
+            book = books[1]
+        ),
+          Review(
+            rating = "3",
+            comment = "Okay",
+            date = date.today(),
+            user = users[0],
+            book = books[2]
+        )
+    ]
+
+    db.session.add_all(reviews)
 
     db.session.commit()
     print("Tables Seeded!")

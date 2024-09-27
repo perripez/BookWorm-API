@@ -1,21 +1,23 @@
 from datetime import date
 
 from flask import Blueprint, request
-from models.book import Book, book_schema, books_schema
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from init import db
+from models.book import Book, book_schema, books_schema
+from controllers.review_controller import reviews_bp
 
 books_bp = Blueprint("books", __name__, url_prefix="/books")
+books_bp.register_blueprint(reviews_bp)
 
-# GET - fetch all books in db | /cards
+# GET - fetch all books in db | /books
 @books_bp.route("/")
 def get_all_books():
     stmt = db.select(Book) # SELECT * FROM books
     books = db.session.scalars(stmt)
     return books_schema.dump(books)
 
-# GET CARD ID - fetch a specific book in db | /cards/<id>
+# GET BOOK ID - fetch a specific book in db | /books/<id>
 @books_bp.route("/<int:book_id>")
 def get_book(book_id):
     stmt = db.select(Book).filter_by(id=book_id)
@@ -26,7 +28,7 @@ def get_book(book_id):
     else:
         return {"error": f"Book with id {book_id} not found!"}, 404 # Bad Request
 
-# POST - create a new book entry | /cards
+# POST - create a new book entry | /books
 @books_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_book():
@@ -45,7 +47,7 @@ def create_book():
     # Return acknowledgement
     return book_schema.dump(book), 201 # Created
 
-# DELETE - delete a specific book from db | /cards/<id>
+# DELETE - delete a specific book from db | /books/<id>
 @books_bp.route("/<int:book_id>", methods=["DELETE"])
 @jwt_required()
 def delete_book(book_id):
@@ -58,13 +60,13 @@ def delete_book(book_id):
         # Delete the book
         db.session.delete(book)
         db.session.commit()
-        return {"message": f"Book with id {book_id} has been deleted"}
+        return {"message": f"Book with id {book_id} has been deleted"}, 200 # Request successful
     # Else
     else:
         # Return error
         return{"error": f"Book with id {book_id} does not exist!"}, 404 # Bad Request
 
-# PUT, PATCH - edit a specific book entry | /cards/<id>
+# PUT, PATCH - edit a specific book entry | /books/<id>
 @books_bp.route("/<int:book_id>", methods=["PUT","PATCH"])
 @jwt_required()
 def edit_book(book_id):
