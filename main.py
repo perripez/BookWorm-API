@@ -20,4 +20,5 @@ def create_app():
     app.register_blueprint(db_commands)
     app.register_blueprint(auth_bp)
     app.register_blueprint(books_bp)
+
     return app
