@@ -26,7 +26,7 @@ class ReviewSchema(ma.Schema):
     book = fields.Nested("BookSchema", exclude=["user"])
 
     class Meta:
-        fields = ("id", "rating", "comment", "id")
+        fields = ("id", "rating", "comment", "date", "user", "book")
 
 # To handle single user object
 review_schema = ReviewSchema()

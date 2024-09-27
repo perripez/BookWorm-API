@@ -15,8 +15,7 @@ class Book(db.Model):
 
     # Define relationships
     user = db.relationship("User", back_populates="books")
-
-    reviews = db.relationship("Review", back_populates="books")
+    reviews = db.relationship("Review", back_populates="book", cascade="all, delete")
 
 class BookSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=["id", "name", "email"]) # Unpack user value with schema - only id, name + email
@@ -24,7 +23,8 @@ class BookSchema(ma.Schema):
     reviews = fields.List(fields.Nested("ReviewSchema", exclude=["book"]))
 
     class Meta:
-        fields = ("id", "title", "publication_year", "date", "user")
+        fields = ("id", "title", "publication_year", "date", "user", "reviews")
+        ordered = True
 
 # To handle single user object
 book_schema = BookSchema()
