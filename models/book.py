@@ -13,11 +13,15 @@ class Book(db.Model):
     # Define foreign keys
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    # Define relationship
+    # Define relationships
     user = db.relationship("User", back_populates="books")
+
+    reviews = db.relationship("Review", back_populates="books")
 
 class BookSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=["id", "name", "email"]) # Unpack user value with schema - only id, name + email
+
+    reviews = fields.List(fields.Nested("ReviewSchema", exclude=["book"]))
 
     class Meta:
         fields = ("id", "title", "publication_year", "date", "user")
