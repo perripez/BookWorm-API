@@ -28,7 +28,7 @@ class ReviewSchema(ma.Schema):
     class Meta:
         fields = ("id", "rating", "comment", "date", "user", "book")
 
-# To handle single user object
+# To handle single review object
 review_schema = ReviewSchema()
-# To handle multiple user objects
+# To handle multiple review objects
 reviews_schema = ReviewSchema(many=True)

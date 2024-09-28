@@ -12,6 +12,9 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    books = db.relationship('Book', backref='user', lazy=True)  # Ensure this line is present
+
+
     # Define relationship
     books = db.relationship("Book", back_populates="user")
 
