@@ -52,8 +52,53 @@ def create_author(book_id):
         db.session.commit()
 
         # return acknowledgement
-        return {"message": f"Author {author.first_name} {author.last_name} successfully added to the book {book.title}!"}
+        return {"message": f"Author {author.first_name} {author.last_name} successfully added to the book {book.title}!"}, 200 # Created successfully
     # Else
     else:
         # Return error
         return {"error": f"A book with id {book_id} does not exist!"}, 404 # Bad Request
+
+# DELETE - delete a specific author from a book | /books/<book_id>/authors/<author_id>
+@author_bp.route("/authors/<int:author_id>", methods=["DELETE"])
+@jwt_required()
+def delete_author(author_id):
+    # Fetch the book from the db
+    stmt = db.select(Author).filter_by(id=author_id)
+    # SELECT * FROM authors WHERE id = 'author_id value';
+    author = db.session.scalar(stmt)
+    # If the author exists
+    if author:
+        # Delete the author
+        db.session.delete(author)
+        db.session.commit()
+        # Return acknowledgment
+        return {"message": f"Author {author.first_name} {author.last_name} has been deleted successfully!"}, 200 # Request successful
+    # Else
+    else:
+        # Return error
+        return {"error": f"Author with the id {author_id} does not exist!"}, 404 # Bad Request
+
+# PUT/PATCH - update a specific author | /authors/<author_id>
+
+@author_bp.route("/authors/<int:author_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def edit_author(author_id):
+    # Get the data from the body of the request
+    body_data = request.get_json()
+    # Fetch the author from the database
+    stmt = db.select(Author).filter_by(id=author_id)
+    # SELECT * FROM authors WHERE id = 'author_id value';
+    author = db.session.scalar(stmt)
+    # If the review exists
+    if author:
+        # Update the reveiw fields as required
+        author.first_name = body_data.get("first_name") or author.first_name
+        author.last_name = body_data.get("last_name") or author.last_name
+        # Commit to the db
+        db.session.commit()
+        # Return acknowledgement
+        return author_schema.dump(author), 200 # Updated Successfully
+    # Else
+    else:
+        # Return an error message
+        return {"error": f"Author with id {author_id} not found!"}, 400 # Bad Request

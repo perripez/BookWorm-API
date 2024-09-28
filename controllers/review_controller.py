@@ -43,13 +43,13 @@ def create_comment(book_id):
         return {"error": f"A book with id {book_id} does not exist!"}, 404 # Bad Request
     
 
-# DELETE - delete a specific review from a book | /books/<book_id>/<review_id>
+# DELETE - delete a specific review from a book | /books/<book_id>/reviews/<review_id>
 @reviews_bp.route("/<int:review_id>/", methods=["DELETE"])
 @jwt_required()
 def delete_review(book_id, review_id):
-    # Fetch the book from the db
+    # Fetch the review from the db
     stmt = db.select(Review).filter_by(id=review_id)
-    # SELECT * FROM reviews WHERE id = 'review_id value'
+    # SELECT * FROM reviews WHERE id = 'review_id value';
     review = db.session.scalar(stmt)
     # If the review exits
     if review:
@@ -63,7 +63,8 @@ def delete_review(book_id, review_id):
         # Return error
         return {"error": f"Review with id {review_id} does not exist!"}, 404 # Bad Request
     
-    # PUT,PATCH - update a specific review from a book | /books/<book_id>/reviews/<review_id>
+
+# PUT,PATCH - update a specific review from a book | /books/<book_id>/reviews/<review_id>
 
 @reviews_bp.route("/<int:review_id>", methods=["PUT", "PATCH"])
 @jwt_required()
@@ -76,7 +77,7 @@ def edit_review(book_id, review_id):
     review = db.session.scalar(stmt)
     # If the review exits
     if review:
-        # Updat the reveiw fields as required
+        # Update the review fields as required
         review.rating = body_data.get("rating") or review.rating
         review.comment = body_data.get("comment") or review.comment
         # Commit to the db

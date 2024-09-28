@@ -22,7 +22,7 @@ class Book(db.Model):
 
 class BookSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=["id", "name", "email"]) # Unpack user value with schema - only id, name + email
-    reviews = fields.List(fields.Nested("ReviewSchema", only=["rating"]))
+    reviews = fields.List(fields.Nested("ReviewSchema"), only=["id", "rating", "comment", "date"])
     author = fields.Nested("AuthorSchema", only=["first_name", "last_name"])
 
     class Meta:
