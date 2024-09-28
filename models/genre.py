@@ -3,7 +3,7 @@ from marshmallow import fields
 
 class Genre(db.Model):
     # Name of the table
-    __tablename__ = "genre"
+    __tablename__ = "genres"
     # Attributes of the table
     id = db.Column(db.Integer, primary_key=True)
     genre_name = db.Column(db.String, nullable=False)

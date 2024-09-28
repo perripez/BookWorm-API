@@ -62,7 +62,7 @@ def create_author(book_id):
 @author_bp.route("/authors/<int:author_id>", methods=["DELETE"])
 @jwt_required()
 def delete_author(author_id):
-    # Fetch the book from the db
+    # Fetch the author from the db
     stmt = db.select(Author).filter_by(id=author_id)
     # SELECT * FROM authors WHERE id = 'author_id value';
     author = db.session.scalar(stmt)

@@ -7,6 +7,7 @@ from models.user import User
 from models.book import Book
 from models.review import Review
 from models.author import Author
+from models.genre import Genre
 
 db_commands = Blueprint("db", __name__)
 
@@ -56,6 +57,28 @@ def seed_tables():
     db.session.add_all(authors)
     db.session.commit()
 
+    # Create a list of genre instances - Dummy Values
+    genres = [
+        Genre(
+            genre_name = "Comedy"
+        ),
+        Genre(
+            genre_name = "SciFi"
+        ),
+        Genre(
+            genre_name = "Self Help"
+        ),
+        Genre(
+            genre_name = "Thriller"
+        ),
+        Genre(
+            genre_name = "Romance"
+        ),
+    ]
+
+    db.session.add_all(genres)
+    db.session.commit()
+
     # Create a list of book instances - Dummy Values
     books = [
         Book(
@@ -63,21 +86,25 @@ def seed_tables():
             publication_year = "2000",
             date = date.today(),
             user_id = users[0].id,
-            author_id = authors[0].id
+            author_id = authors[0].id,
+            genre_id = genres[0].id
         ),
         Book(
             title = "Book 2",
             publication_year = "2004",
             date = date.today(),
             user_id = users[0].id,
-            author_id = authors[1].id
+            author_id = authors[1].id,
+            genre_id = genres[1].id
+
         ),
         Book(
             title = "Book 3",
             publication_year = "2021",
             date = date.today(),
             user_id = users[1].id,
-            author_id = authors[2].id
+            author_id = authors[2].id,
+            genre_id = genres[3].id
         )
     ]
 
