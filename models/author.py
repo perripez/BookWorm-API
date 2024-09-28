@@ -8,12 +8,12 @@ class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-
+    
     # Define relationship to book
-    books = db.relationship("Book", back_populates="author", cascade="all, delete")
+    books = db.relationship("Book", back_populates="author")
 
 class AuthorSchema(ma.Schema):
-    books = fields.List(fields.Nested("BookSchema", exclude=["author"]))
+    books = fields.List(fields.Nested("BookSchema", exclude=["author", "reviews"]))
     
     class Meta:
         fields = ("id", "first_name", "last_name", "books")

@@ -13,6 +13,7 @@ reviews_bp = Blueprint("reviews", __name__, url_prefix="/<int:book_id>/reviews")
 
 # POST - create a new review | /book_id/reviews
 @reviews_bp.route("/", methods=["POST"])
+
 @jwt_required()
 def create_comment(book_id):
     # Get the data from the body of the request
@@ -29,7 +30,7 @@ def create_comment(book_id):
             comment = body_data.get("comment"),
             date = date.today(),
             user_id = get_jwt_identity(),
-            book = book,
+            book_id = book.id
         )
         # Commit session to db
         db.session.add(review)
@@ -40,6 +41,7 @@ def create_comment(book_id):
     else:
         # Return error
         return {"error": f"A book with id {book_id} does not exist!"}, 404 # Bad Request
+    
 
 # DELETE - delete a specific review from a book | /books/<book_id>/<review_id>
 @reviews_bp.route("/<int:review_id>/", methods=["DELETE"])
