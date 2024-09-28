@@ -6,6 +6,7 @@ from init import db, bcrypt
 from models.user import User
 from models.book import Book
 from models.review import Review
+from models.author import Author
 
 db_commands = Blueprint("db", __name__)
 
@@ -34,6 +35,26 @@ def seed_tables():
     ]
 
     db.session.add_all(users)
+    db.session.commit()
+
+    # Create a list of author instances - Dummy Values
+    authors = [
+        Author(
+            first_name = "Author",
+            last_name = "One",
+        ),
+        Author(
+            first_name = "Author",
+            last_name = "Two",
+        ),
+        Author(
+            first_name = "Author",
+            last_name = "Three",
+        )
+    ]
+
+    db.session.add_all(authors)
+    db.session.commit()
 
     # Create a list of book instances - Dummy Values
     books = [
@@ -41,23 +62,27 @@ def seed_tables():
             title = "Book 1",
             publication_year = "2000",
             date = date.today(),
-            user = users[0]
+            user_id = users[0].id,
+            author_id = authors[0].id
         ),
         Book(
             title = "Book 2",
             publication_year = "2004",
             date = date.today(),
-            user = users[0]
+            user_id = users[0].id,
+            author_id = authors[1].id
         ),
         Book(
             title = "Book 3",
             publication_year = "2021",
             date = date.today(),
-            user = users[1]
+            user_id = users[1].id,
+            author_id = authors[2].id
         )
     ]
 
     db.session.add_all(books)
+    db.session.commit()
 
     # Create a list of review instances - Dummy Values
     reviews = [
@@ -65,26 +90,27 @@ def seed_tables():
             rating = "5",
             comment = "Very Good",
             date = date.today(),
-            user = users[0],
-            book = books[0]
+            user_id = users[0].id,
+            book_id = books[0].id
         ),
           Review(
             rating = "4",
             comment = "Good",
             date = date.today(),
-            user = users[1],
-            book = books[1]
+            user_id = users[1].id,
+            book_id = books[1].id
         ),
           Review(
             rating = "3",
             comment = "Okay",
             date = date.today(),
-            user = users[0],
-            book = books[2]
+            user_id = users[0].id,
+            book_id = books[2].id
         )
     ]
 
     db.session.add_all(reviews)
+    db.session.commit()
 
     db.session.commit()
     print("Tables Seeded!")

@@ -1,6 +1,6 @@
 from datetime import date
 
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from init import db
@@ -15,7 +15,7 @@ books_bp.register_blueprint(reviews_bp)
 def get_all_books():
     stmt = db.select(Book) # SELECT * FROM books
     books = db.session.scalars(stmt)
-    return books_schema.dump(books)
+    return jsonify(books_schema.dump(books))
 
 # GET BOOK ID - fetch a specific book in db | /books/<id>
 @books_bp.route("/<int:book_id>")

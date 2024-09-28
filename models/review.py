@@ -20,15 +20,17 @@ class Review(db.Model):
 
     book = db.relationship("Book", back_populates="reviews")
 
+class BookSimpleSchema(ma.Schema):
+    id = fields.Integer()
+    title = fields.String()
+
 class ReviewSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=["name", "email"]) # Unpack user value with schema - only id, name + email
 
-    book = fields.Nested("BookSchema", exclude=["reviews"])
-
     class Meta:
-        fields = ("id", "rating", "comment", "date", "user", "book")
+        fields = ("id", "rating", "comment", "date", "user")
 
-# To handle single user object
+# To handle single review object
 review_schema = ReviewSchema()
-# To handle multiple user objects
+# To handle multiple review objects
 reviews_schema = ReviewSchema(many=True)
