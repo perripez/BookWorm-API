@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields,validate
 
 class Genre(db.Model):
     # Name of the table
@@ -10,6 +10,8 @@ class Genre(db.Model):
 
     # Define the relationship to book
     books = db.relationship("Book", back_populates="genre")
+
+    ALLOWED_GENRES = {"Self help", "Autobiography", "Fiction", "Health", "Children's"}
 
 class GenreSchema(ma.Schema):
     books = fields.List(fields.Nested("BookSchema", exclude=["genre"]))

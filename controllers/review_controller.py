@@ -15,9 +15,10 @@ reviews_bp = Blueprint("reviews", __name__, url_prefix="/<int:book_id>/reviews")
 @reviews_bp.route("/", methods=["POST"])
 
 @jwt_required()
-def create_comment(book_id):
+def create_review(book_id):
     # Get the data from the body of the request
     body_data = request.get_json()
+    review = review_schema.load(body_data)
     # Fetch the book with id=book_id
     stmt = db.select(Book).filter_by(id=book_id)
     # SELECT * FROM books WHERE id = 'book_id value';
@@ -65,12 +66,12 @@ def delete_review(book_id, review_id):
     
 
 # PUT,PATCH - update a specific review from a book | /books/<book_id>/reviews/<review_id>
-
 @reviews_bp.route("/<int:review_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def edit_review(book_id, review_id):
     # Get the data from the body of the request
     body_data = request.get_json()
+    review = review_schema.load(body_data)
     # Fetch the review from the db
     stmt = db.select(Review).filter_by(id=review_id)
     # ^ SELECT * FROM reviews WHERE id = 'review_id value';

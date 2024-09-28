@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
-
+from models.user import  UserSchema
 from init import bcrypt, db
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -15,6 +15,7 @@ def register_user():
     try:
         # Get the data from the body of the request
         body_data = request.get_json()
+        user_schema = UserSchema()
         # Create an instance of the user model
         user = User(
             name = body_data.get("name"),

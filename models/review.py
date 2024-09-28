@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validate
 
 class Review(db.Model):
     # Name of the table
@@ -27,6 +27,10 @@ class BookSimpleSchema(ma.Schema):
 class ReviewSchema(ma.Schema):
     user = fields.Nested("UserSchema", only=["name", "email"]) # Unpack user value with schema - only id, name + email
 
+    # Validate that ratings are 1,2,3,4 or 5 stars
+    rating = fields.Integer(
+        required=True, validate=validate.OneOf([1, 2, 3, 4, 5], error="Rating must be between 1 and 5 stars."))
+    
     class Meta:
         fields = ("id", "rating", "comment", "date", "user")
 

@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validate
 
 class User(db.Model):
     # Name of the table
