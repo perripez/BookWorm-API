@@ -26,35 +26,42 @@ def get_genre(genre_id):
         return {"error": f"Author with id {genre_id} not found!"}
 
 # POST - create a new genre entry | /book_id/genres
+ALLOWED_GENRES = {"Self help", "Autobiography", "Fiction", "Health", "Childrens"}
 @genre_bp.route("/books/<int:book_id>/genres/", methods=["POST"])
 @jwt_required()
 def add_genre(book_id):
     # Get the data from the body of the request
     body_data = request.get_json()
+    
+    # Load and validate genre data
+    genre_name = body_data.get("genre_name")
+    genre = genre_schema.load(body_data)
+
     # Fetch the book with the id=book_id
     stmt = db.select(Book).filter_by(id=book_id)
-    # SELECT * FROM books WHERE id = 'book_id value';
     book = db.session.scalar(stmt)
-    # if the book exists
-    if book:
-        # Create instance of genre model
-        genre = Genre(
-            genre_name = body_data.get("genre_name")
-        )
 
-        # Commit to the db
+    # Check if the book exists
+    if book:
+        # Count the number of existing genres for the specified genre_name
+        existing_genre_count = db.session.query(Genre).filter_by(genre_name=genre_name).count()
+
+        # Check if the existing count exceeds the limit
+        if existing_genre_count >= 10:
+            return {"error": f"There cannot be more than 10 genres of '{genre_name}' at a time."}, 400  # Bad Request
+
+        # Create instance of genre model
+        genre = Genre(genre_name=genre_name)
+
+        # Associate genre with the book if needed, or manage relationships accordingly
         db.session.add(genre)
         db.session.commit()
-
-        book.genre_id = genre.id
-        db.session.commit()
-
+        
         # Return acknowledgement
-        return {"message": f"Genre {genre.genre_name} successfully added to the book {book.title}!"}, 200 # Created successfully
-    # Else
+        return {"message": f"Genre '{genre.genre_name}' successfully added to the book '{book.title}'!"}, 201  # Created
     else:
-        #  Return error
-        return {"error": f"A book with id {book_id} does not exist!"}, 404 # Bad Request
+        # Return error if the book doesn't exist
+        return {"error": f"A book with id {book_id} does not exist!"}, 404  # Not Found
     
 # DELETE - delete a specific genre from a book | /books/<book_id>/genres/<genre_id>
 @genre_bp.route("/genres/<int:genre_id>", methods=["DELETE"])
@@ -77,25 +84,35 @@ def delete_genre(genre_id):
         return {"error": f"Genre with the id {genre_id} does not exist!"}, 404 # Bad Request
     
 # PUT/PATCH - update a specific author | /authors/<author_id>
-
+ALLOWED_GENRES = {"Self help", "Autobiography", "Fiction", "Health", "Childrens"}
 @genre_bp.route("/genres/<int:genre_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def edit_genre(genre_id):
     # Get the data from the body of the request
     body_data = request.get_json()
-    # Fetch the author from the database
+    genre_name = body_data.get("genre_name")
+
+    # Fetch the genre from the db
     stmt = db.select(Genre).filter_by(id=genre_id)
-    # SELECT * FROM authors WHERE id = 'genre_id value';
     genre = db.session.scalar(stmt)
+
     # If the genre exists
     if genre:
-        # Update the reveiw fields as required
-        genre.genre_name = body_data.get("genre_name") or genre.genre_name
-        # Commit to the db
+        # Count how many genres of the new genre_name currently exist
+        existing_genre_count = db.session.query(Genre).filter_by(genre_name=genre_name).count()
+
+        # Check if the existing count exceeds the limit
+        if existing_genre_count >= 10:
+            return {"error": f"There cannot be more than 10 genres of '{genre_name}' at a time."}, 400  # Bad Request
+
+        # Update genre name
+        genre.genre_name = genre_name
+
+        # Commit the changes to the db
         db.session.commit()
+
         # Return acknowledgement
-        return genre_schema.dump(genre), 200 # Updated Successfully
-    # Else
+        return {"message": f"Genre successfully updated to '{genre.genre_name}'!"}, 200  # Updated successfully
     else:
-        # Return an error message
-        return {"error": f"Genre with id {genre_id} not found!"}, 400 # Bad Request
+        # Return error if the genre doesn't exist
+        return {"error": f"A genre with id {genre_id} does not exist!"}, 404  # Not Found

@@ -1,5 +1,7 @@
+from datetime import datetime
 from init import db, ma
 from marshmallow import fields # Serialise and Deserialise data with Marshmallow
+from marshmallow import validate, validates, ValidationError
 
 
 class Book(db.Model):
@@ -28,7 +30,16 @@ class BookSchema(ma.Schema):
     author = fields.Nested("AuthorSchema", only=["first_name", "last_name"])
     genre = fields.Nested("GenreSchema", only=["genre_name"])
 
+    # Validate that year entries are between 1450 and current year
+    publication_year = fields.Integer(required=True)
 
+    # Custom validation method for publication year
+    @validates("publication_year")
+    def validate_publication_year(self, value):
+        current_year = datetime.now().year
+        if value < 1450 or value > current_year:
+            return {"error": f"Publication year must be between 1450 and {current_year}!"},
+    
     class Meta:
         fields = ("id", "title", "publication_year", "author", "genre", "date", "user", "reviews")
         include_fk = True

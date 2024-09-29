@@ -60,19 +60,19 @@ def seed_tables():
     # Create a list of genre instances - Dummy Values
     genres = [
         Genre(
-            genre_name = "Comedy"
-        ),
-        Genre(
-            genre_name = "SciFi"
-        ),
-        Genre(
             genre_name = "Self Help"
         ),
         Genre(
-            genre_name = "Thriller"
+            genre_name = "Autobiography"
         ),
         Genre(
-            genre_name = "Romance"
+            genre_name = "Fiction"
+        ),
+        Genre(
+            genre_name = "Health"
+        ),
+        Genre(
+            genre_name = "Children's"
         ),
     ]
 
@@ -104,7 +104,7 @@ def seed_tables():
             date = date.today(),
             user_id = users[1].id,
             author_id = authors[2].id,
-            genre_id = genres[3].id
+            genre_id = genres[2].id
         )
     ]
 
