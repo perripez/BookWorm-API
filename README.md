@@ -25,8 +25,8 @@ Using an ORM (Object-Relational Mapping) like SQLAlchemy, the API maintains data
 
     Cascading deletions ensure that when a user is deleted, their associated reviews and books are handled appropriately, preventing orphaned records.
 
-**Scalability and Maintenance:**
-The architecture of the API supports future enhancements and additional features without significant rework. As user needs evolve, new functionalities (like social sharing, advanced search capabilities, etc.) can be integrated seamlessly.
+- **Scalability and Maintenance:**
+The architecture of the API supports future enhancements and additional features without significant rework.
 ___
 
 ### Describe the way tasks are allocated and tracked in your project.
@@ -212,7 +212,7 @@ The BookWorm API contains the following tables:
 
 - Author: Books can have 1 author. Users can enter the first name and last name of the author.
 
-- Genre: Books can have 1 genre. Users can enter a genre (Self Help, Fantasy, Comedy, Biography, Educational).
+- Genre: Books can have 1 genre. Users can enter a genre (Self Help, Fiction, Health, Childrens, Autobiography).
 
 ![BookWorm_ERD](./docs/BookWorm%20ERD.png)
 ___
@@ -222,7 +222,7 @@ ___
 
 ### Explain the implemented models and their relationships, including how the relationships aid the database implementation.
 
-Since completingthe API, the updated models are below:
+Since completing the API, the updated models are below:
 
 - **Users**
 Attributes:
