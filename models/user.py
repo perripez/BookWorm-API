@@ -1,5 +1,6 @@
 from init import db, ma
-from marshmallow import fields, validate
+from marshmallow import fields, validates, ValidationError
+import re
 
 class User(db.Model):
     # Name of the table
@@ -20,10 +21,18 @@ class User(db.Model):
 
     reviews = db.relationship("Review", back_populates="user")
 
+EMAIL_REGEX = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+
 class UserSchema(ma.Schema):
+
     books = fields.List(fields.Nested('BookSchema', exclude=["user"]))
 
     reviews = fields.List(fields.Nested('ReviewSchema', exclude=["user"]))
+
+    @validates("email")
+    def validate_email(self, value):
+        if not re.match(EMAIL_REGEX, value):
+            raise ValidationError("Invalid email format")
 
     class Meta:
         fields = ("id", "name", "email", "password", "is_admin", "books", "reviews")

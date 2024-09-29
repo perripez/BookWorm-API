@@ -12,10 +12,11 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 # User registration route
 @auth_bp.route("/register", methods=["POST"])
 def register_user():
+    user_schema = UserSchema()
     try:
         # Get the data from the body of the request
         body_data = request.get_json()
-        user_schema = UserSchema()
+        user = user_schema.load(body_data)
         # Create an instance of the user model
         user = User(
             name = body_data.get("name"),
