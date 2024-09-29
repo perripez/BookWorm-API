@@ -6,6 +6,7 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from init import db
 from models.review import Review, review_schema, reviews_schema
 from models.book import Book, book_schema, books_schema
+from utils import auth_as_admin_decorator
 
 reviews_bp = Blueprint("reviews", __name__, url_prefix="/<int:book_id>/reviews")
 
@@ -47,6 +48,8 @@ def create_review(book_id):
 # DELETE - delete a specific review from a book | /books/<book_id>/reviews/<review_id>
 @reviews_bp.route("/<int:review_id>/", methods=["DELETE"])
 @jwt_required()
+# Ensure only admins can delete a review
+@auth_as_admin_decorator
 def delete_review(book_id, review_id):
     # Fetch the review from the db
     stmt = db.select(Review).filter_by(id=review_id)

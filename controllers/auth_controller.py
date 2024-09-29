@@ -2,10 +2,13 @@ from flask import Blueprint, request
 from models.user import User, user_schema
 from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from datetime import timedelta
 from models.user import  UserSchema
+from models.book import Book
+from models.review import Review
 from init import bcrypt, db
+from utils import auth_as_admin_decorator
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -56,3 +59,38 @@ def login_user():
     else:
         # Return error
         return {"Error": "Invalid email or password"}, 400 # Bad Request
+    
+# DELETE - delete a user: /auth/users/<int:user_id>
+@auth_bp.route("/users/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+# Ensure only admins can delete a user
+@auth_as_admin_decorator
+def delete_user(user_id):
+    # Find the user with the given id from the db
+    stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.scalar(stmt)
+
+    # If the user exists
+    if user:
+        # Delete all reviews associated with the user
+        db.session.query(Review).filter(Review.user_id == user_id).delete()
+
+        # Delete all books associated with the user
+        books = db.session.query(Book).filter(Book.user_id == user_id).all()
+        for book in books:
+            # Delete all reviews associated with each book before deleting the book
+            db.session.query(Review).filter(Review.book_id == book.id).delete()
+        
+        # Now delete the books
+        db.session.query(Book).filter(Book.user_id == user_id).delete()
+        
+        # Commit the changes to the database
+        db.session.commit()
+
+        # Finally, delete the user
+        db.session.delete(user)
+        db.session.commit()
+
+        return {"message": f"User with id {user_id} is deleted."}, 200
+    else:
+        return {"error": f"User with id {user_id} not found."}, 404

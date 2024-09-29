@@ -14,7 +14,7 @@ class Book(db.Model):
     date = db.Column(db.Date)
 
     # Define foreign keys
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey("authors.id"))
     genre_id = db.Column(db.Integer, db.ForeignKey("genres.id"))
 

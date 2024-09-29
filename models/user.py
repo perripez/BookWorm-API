@@ -13,11 +13,8 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    books = db.relationship('Book', backref='user', lazy=True)  # Ensure this line is present
-
-
     # Define relationship
-    books = db.relationship("Book", back_populates="user")
+    books = db.relationship("Book", back_populates="user", cascade="all, delete-orphan")
 
     reviews = db.relationship("Review", back_populates="user")
 
@@ -41,3 +38,5 @@ class UserSchema(ma.Schema):
 user_schema = UserSchema(exclude=["password"])
 # To handle multiple user objects
 users_schema = UserSchema(many=True, exclude=["password"])
+
+
